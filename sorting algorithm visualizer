@@ -1,0 +1,89 @@
+import pygame
+import random
+import time
+
+# Initialize Pygame
+pygame.init()
+
+# Constants
+SCREEN_WIDTH = 800
+SCREEN_HEIGHT = 600
+BLOCK_WIDTH = 10
+BLOCK_SPACING = 2
+ARRAY_SIZE = (SCREEN_WIDTH - BLOCK_WIDTH) // (BLOCK_WIDTH + BLOCK_SPACING)
+SORT_SPEED = 30
+
+# Colors
+WHITE = (255, 255, 255)
+BLACK = (0, 0, 0)
+RED = (255, 0, 0)
+GREEN = (0, 255, 0)
+
+# Create the screen
+screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+pygame.display.set_caption("Sorting Algorithm Visualizer")
+
+# Generate a random list of values to sort
+array = [random.randint(10, 300) for _ in range(ARRAY_SIZE)]
+
+# Function to draw the array on the screen
+def draw_array():
+    screen.fill(WHITE)
+    for i, value in enumerate(array):
+        x = i * (BLOCK_WIDTH + BLOCK_SPACING)
+        pygame.draw.rect(screen, RED, (x, SCREEN_HEIGHT - value, BLOCK_WIDTH, value))
+    pygame.display.update()
+
+# Bubble Sort algorithm
+def bubble_sort(arr, ascending=True):
+    n = len(arr)
+    for i in range(n):
+        for j in range(0, n - i - 1):
+            if (arr[j] > arr[j + 1] and ascending) or (arr[j] < arr[j + 1] and not ascending):
+                arr[j], arr[j + 1] = arr[j + 1], arr[j]
+                draw_array()
+                time.sleep(1 / SORT_SPEED)
+
+# Insertion Sort algorithm
+def insertion_sort(arr, ascending=True):
+    for i in range(1, len(arr)):
+        key = arr[i]
+        j = i - 1
+        while j >= 0 and ((key < arr[j] and ascending) or (key > arr[j] and not ascending)):
+            arr[j + 1] = arr[j]
+            draw_array()
+            time.sleep(1 / SORT_SPEED)
+            j -= 1
+        arr[j + 1] = key
+
+# Main loop
+running = True
+sorting = False
+draw_array()
+
+while running:
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            running = False
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_SPACE and not sorting:
+                sorting = True
+                bubble_sort(array.copy(), True)  # Ascending order
+                sorting = False
+                draw_array()
+            if event.key == pygame.K_i and not sorting:
+                sorting = True
+                insertion_sort(array.copy(), True)  # Ascending order
+                sorting = False
+                draw_array()
+            if event.key == pygame.K_d and not sorting:
+                sorting = True
+                bubble_sort(array.copy(), False)  # Descending order
+                sorting = False
+                draw_array()
+            if event.key == pygame.K_r and not sorting:
+                array = [random.randint(10, 300) for _ in range(ARRAY_SIZE)]
+                draw_array()
+
+# Quit Pygame
+pygame.quit()
